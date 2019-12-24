@@ -51,3 +51,9 @@ dsync push [ path to .syncfile ]
 ```
 
 If no syncfile is specified it will read from current directory.
+
+### Manually editing .syncfiles
+
+Syncfiles have extremely simple formatting, each row starts with an identifier, `g` for git repos `m` for make folders `r` for rc folders and then an `e` at the end of the file to signify it's end
+
+`g`, `m` and `r` are followed up by a path to the directory, without any whitespace inbetween.
