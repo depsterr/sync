@@ -61,7 +61,7 @@ void writesync(char* filepath){
 			fprintf(fp, "%c%s\n", 'r', sync.rcdirs[n]);
 		fprintf(fp, "%c", 'e');
 	}else{
-		printf("cannot open file for writing!\n");
+		printf("Cannot open file for writing!\n");
 		exit(-1);
 	}
 }
@@ -83,7 +83,7 @@ void readsync(char* filepath){
 	FILE* fp = fopen (filepath, "rb");
 
 	if (!fp) {
-		printf("syncfile does not exist!\n");
+		printf("Syncfile does not exist!\n");
 		exit(-1);
 	} else {
 		fseek(fp, 0, SEEK_END);
@@ -93,7 +93,7 @@ void readsync(char* filepath){
 		if (buffer) {
 			fread(buffer, 1, bufferLength, fp);
 		}else{
-			printf("syncfile does not exist!\n");
+			printf("Syncfile does not exist!\n");
 			exit(-1);
 		}
 		fclose(fp);
@@ -196,7 +196,7 @@ int main(int argc, char** argv){
 	/* Handle args */
 
 	if(argc < 2){
-		printf("not enough args given, usage: dsync <pull/push/create> [ syncfile ]\n");
+		printf("Not enough arguments given, usage: dsync < pull/push/create > [ syncfile ]\n");
 		return -1;
 	}
 
@@ -229,8 +229,9 @@ int main(int argc, char** argv){
 
 			/* Git dirs  */
 
-			printf("Pulling git repos\n");
+			printf("Pulling %d git repos\n\n", sync.ngitdirs);
 			for(int n = 0; n < sync.ngitdirs; n++){
+				printf("Running %s\n", sync.gitdirs[n]);
 				strcpy(cdcommand, "cd ");
 				strcat(cdcommand, sync.gitdirs[n]);
 				system(cdcommand);
@@ -243,8 +244,9 @@ int main(int argc, char** argv){
 
 			/* Make dirs */
 
-			printf("Installing with make\n");
+			printf("Installing %d programs with make\n\n", sync.nmakedirs);
 			for(int n = 0; n < sync.nmakedirs; n++){
+				printf("Running %s\n", sync.makedirs[n]);
 				strcpy(cdcommand, "cd ");
 				strcat(cdcommand, sync.makedirs[n]);
 				system(cdcommand);
@@ -257,8 +259,9 @@ int main(int argc, char** argv){
 
 			/* rcdirs */
  
-			printf("Running pullrcs\n");
+			printf("Running %d pullrcs\n\n", sync.nmakedirs);
 			for(int n = 0; n < sync.nrcdirs; n++){
+				printf("Running %s\n", sync.rcdirs[n]);
 				strcpy(cdcommand, "cd ");
 				strcat(cdcommand, sync.rcdirs[n]);
 				system(cdcommand);
@@ -273,7 +276,7 @@ int main(int argc, char** argv){
 
 			/* rcdirs */
 
-			printf("Running %d pushrcs\n", sync.nrcdirs);
+			printf("Running %d pushrcs\n\n", sync.nrcdirs);
 			for(int n = 0; n < sync.nrcdirs; n++){
 				printf("Running %s\n", sync.rcdirs[n]);
 				strcpy(cdcommand, "cd ");
@@ -288,7 +291,7 @@ int main(int argc, char** argv){
 
 			/* Git dirs  */
 
-			printf("Pushing %d git dirs\n", sync.ngitdirs);
+			printf("Pushing %d git dirs\n\n", sync.ngitdirs);
 			for(int n = 0; n < sync.ngitdirs; n++){
 				printf("Pushing %s\n", sync.gitdirs[n]);
 				strcpy(cdcommand, "cd ");
@@ -300,7 +303,7 @@ int main(int argc, char** argv){
 			}
 		}
 	}else{
-		printf("Enter all git dirs and then enter end\n");
+		printf("Enter all git dirs and then enter 'end'\n\n");
 		for(;;){
 			char input[PATH_MAX];
 			scanf("%s", &input);
@@ -314,7 +317,7 @@ int main(int argc, char** argv){
 				strcpy(sync.gitdirs[sync.ngitdirs - 1], input);
 			}
 		}
-		printf("Enter all make dirs and then enter end\n");
+		printf("Enter all make dirs and then enter 'end'\n\n");
 		for(;;){
 			char input[PATH_MAX];
 			scanf("%s", &input);
@@ -328,7 +331,7 @@ int main(int argc, char** argv){
 				strcpy(sync.makedirs[sync.nmakedirs - 1], input);
 			}
 		}
-		printf("Enter all rc dirs and then enter end\n");
+		printf("Enter all rc dirs and then enter 'end'\n\n");
 		for(;;){
 			char cdcommand[PATH_MAX];
 			char touchcommand[PATH_MAX];
