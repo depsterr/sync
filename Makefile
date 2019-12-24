@@ -1,4 +1,4 @@
-CC=tcc
+CC=gcc
 PROJECTDIR=dsync
 INSTALLDIR=/bin/dsync
 CFLAGS=

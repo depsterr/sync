@@ -305,29 +305,31 @@ int main(int argc, char** argv){
 		printf("Enter all git dirs and then enter 'end'\n\n");
 		for(;;){
 			char input[PATH_MAX];
+			char filePath[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
-				realpath(input, input);
+				realpath(input, filePath);
 				sync.ngitdirs++;
 				sync.gitdirs = realloc(sync.gitdirs, sync.ngitdirs * sizeof(char*));
-				sync.gitdirs[sync.ngitdirs - 1] = malloc(strlen(input));
-				strncpy(sync.gitdirs[sync.ngitdirs - 1], input, PATH_MAX);
+				sync.gitdirs[sync.ngitdirs - 1] = malloc(strlen(filePath));
+				strncpy(sync.gitdirs[sync.ngitdirs - 1], filePath, PATH_MAX);
 			}
 		}
 		printf("Enter all make dirs and then enter 'end'\n\n");
 		for(;;){
 			char input[PATH_MAX];
+			char filePath[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
-				realpath(input, input);
+				realpath(input, filePath);
 				sync.nmakedirs++;
 				sync.makedirs = realloc(sync.makedirs, sync.nmakedirs * sizeof(char*));
-				sync.makedirs[sync.nmakedirs - 1] = malloc(strlen(input));
-				strncpy(sync.makedirs[sync.nmakedirs - 1], input, PATH_MAX);
+				sync.makedirs[sync.nmakedirs - 1] = malloc(strlen(filePath));
+				strncpy(sync.makedirs[sync.nmakedirs - 1], filePath, PATH_MAX);
 			}
 		}
 		printf("Enter all rc dirs and then enter 'end'\n\n");
@@ -335,15 +337,16 @@ int main(int argc, char** argv){
 			char cdcommand[PATH_MAX];
 			char touchcommand[PATH_MAX];
 			char input[PATH_MAX];
+			char filePath[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
-				realpath(input, input);
+				realpath(input, filePath);
 				sync.nrcdirs++;
 				sync.rcdirs = realloc(sync.rcdirs, sync.nrcdirs * sizeof(char*));
-				sync.rcdirs[sync.nrcdirs - 1] = malloc(strlen(input));
-				strncpy(sync.rcdirs[sync.nrcdirs - 1], input, PATH_MAX);
+				sync.rcdirs[sync.nrcdirs - 1] = malloc(strlen(filePath));
+				strncpy(sync.rcdirs[sync.nrcdirs - 1], filePath, PATH_MAX);
 
 				strncpy(cdcommand, "cd ", PATH_MAX);
 				strcat(cdcommand, currentdir);
