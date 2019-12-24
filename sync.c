@@ -259,7 +259,7 @@ int main(int argc, char** argv){
 
 			printf("Running %d pushrcs\n\n", syncData.nrcdirs);
 			for(int n = 0; n < syncData.nrcdirs; n++){
-				printf("Running %s\n", syncData.rcdirs[n]);
+				printf("Running %s/.syncpushrc\n", syncData.rcdirs[n]);
 				chdir(syncData.rcdirs[n]);
 				system("sh .syncpushrc");
 			}
