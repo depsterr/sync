@@ -5,6 +5,7 @@
 #define bool unsigned char
 #define false 0
 #define true !false
+#define PATH_MAX 256
 
 typedef enum Mode{
 	PULL = 0,
@@ -32,10 +33,10 @@ char* currentdir;
 
 void getOutput(char** returnstr, char* command){
 
-	char cdcommand[270];
+	char cdcommand[PATH_MAX];
 
 	FILE *fp;
-	*returnstr = malloc(256);
+	*returnstr = malloc(PATH_MAX);
 	
 	fp = popen(command, "r");
 	
@@ -219,11 +220,11 @@ int main(int argc, char** argv){
 		/* Read Syncfile */
 
 		if(hasFilePath)
-			readsync(argv[2]);
+			readsync(argv[PATH_MAX]);
 		else
 			readsync(".syncfile");
 
-		char cdcommand[260];
+		char cdcommand[PATH_MAX];
 		if(mode == PULL){
 
 			/* Git dirs  */
@@ -301,11 +302,12 @@ int main(int argc, char** argv){
 	}else{
 		printf("Enter all git dirs and then enter end\n");
 		for(;;){
-			char input[256];
+			char input[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
+				realpath(input, input);
 				sync.ngitdirs++;
 				sync.gitdirs = realloc(sync.gitdirs, sync.ngitdirs * sizeof(char*));
 				sync.gitdirs[sync.ngitdirs - 1] = malloc(strlen(input));
@@ -314,11 +316,12 @@ int main(int argc, char** argv){
 		}
 		printf("Enter all make dirs and then enter end\n");
 		for(;;){
-			char input[256];
+			char input[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
+				realpath(input, input);
 				sync.nmakedirs++;
 				sync.makedirs = realloc(sync.makedirs, sync.nmakedirs * sizeof(char*));
 				sync.makedirs[sync.nmakedirs - 1] = malloc(strlen(input));
@@ -327,13 +330,14 @@ int main(int argc, char** argv){
 		}
 		printf("Enter all rc dirs and then enter end\n");
 		for(;;){
-			char cdcommand[260];
-			char touchcommand[270];
-			char input[256];
+			char cdcommand[PATH_MAX];
+			char touchcommand[PATH_MAX];
+			char input[PATH_MAX];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
+				realpath(input, input);
 				sync.nrcdirs++;
 				sync.rcdirs = realloc(sync.rcdirs, sync.nrcdirs * sizeof(char*));
 				sync.rcdirs[sync.nrcdirs - 1] = malloc(strlen(input));
@@ -353,5 +357,4 @@ int main(int argc, char** argv){
 			writesync(".syncfile");
 		printf("wrote .syncfile\n");
 	}
-
 }
