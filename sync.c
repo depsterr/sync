@@ -119,7 +119,6 @@ void readsync(char* filepath){
 			break;
 		switch(readMode){
 			case GIT:
-				filepathLength++;
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
@@ -130,10 +129,10 @@ void readsync(char* filepath){
 							sync.gitdirs[sync.ngitdirs - 1][k] = buffer[startFilepath + k];
 						sync.gitdirs[sync.ngitdirs - 1][filepathLength - 1] = '0';
 					}
-				}
+				}else
+					filepathLength++;
 				break;
 			case MAKE:
-				filepathLength++;
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
@@ -145,10 +144,10 @@ void readsync(char* filepath){
 						sync.makedirs[sync.nmakedirs - 1][filepathLength - 1] = '0';
 
 					}
-				}
+				}else
+					filepathLength++;
 				break;
 			case RC:
-				filepathLength++;
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
@@ -160,7 +159,8 @@ void readsync(char* filepath){
 						sync.rcdirs[sync.nrcdirs - 1][filepathLength - 1] = '0';
 
 					}
-				}
+				}else
+					filepathLength++;
 				break;
 			case TAG:
 				if(buffer[n] == 'g'){
