@@ -26,7 +26,9 @@ For setting up your sync directories run:
 dsync create [ path to .syncfile ]
 ```
 
-This will let you specify all directories. Then set up your .syncpushrc and .syncpullrc files to copy files if needed (if you have a repo in another location than the file on your computer).
+This will let you specify all directories. 
+
+Then set up your .syncpushrc and .syncpullrc files to copy files if needed (if you have a repo in another location than the file on your computer).
 
 If no syncfile is specified it will write to the current directory as .syncfile.
 
