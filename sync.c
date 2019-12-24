@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define bool unsigned char
 #define false 0
 #define true !false
-#define PATH_MAX 256
 
 typedef enum Mode{
 	PULL = 0,
@@ -23,7 +23,7 @@ typedef struct Sync{
 }Sync;
 
 
-Sync sync;
+Sync syncData;
 
 Mode mode;
 
@@ -33,10 +33,8 @@ char* currentdir;
 
 void getOutput(char** returnstr, char* command){
 
-	char cdcommand[PATH_MAX];
-
 	FILE *fp;
-	*returnstr = malloc(PATH_MAX);
+	*returnstr = malloc(256);
 	
 	fp = popen(command, "r");
 	
@@ -48,17 +46,17 @@ void getOutput(char** returnstr, char* command){
 	pclose(fp);
 }
 
-void writesync(char* filepath){
+void writesyncData(char* filepath){
 
 	FILE* fp = fopen (filepath, "w");
 
 	if(fp){
-		for(int n = 0; n < sync.ngitdirs; n++)
-			fprintf(fp, "%c%s\n", 'g', sync.gitdirs[n]);
-		for(int n = 0; n < sync.nmakedirs; n++)
-			fprintf(fp, "%c%s\n", 'm', sync.makedirs[n]);
-		for(int n = 0; n < sync.nrcdirs; n++)
-			fprintf(fp, "%c%s\n", 'r', sync.rcdirs[n]);
+		for(int n = 0; n < syncData.ngitdirs; n++)
+			fprintf(fp, "%c%s\n", 'g', syncData.gitdirs[n]);
+		for(int n = 0; n < syncData.nmakedirs; n++)
+			fprintf(fp, "%c%s\n", 'm', syncData.makedirs[n]);
+		for(int n = 0; n < syncData.nrcdirs; n++)
+			fprintf(fp, "%c%s\n", 'r', syncData.rcdirs[n]);
 		fprintf(fp, "%c", 'e');
 	}else{
 		printf("Cannot open file for writing!\n");
@@ -66,15 +64,15 @@ void writesync(char* filepath){
 	}
 }
 
-void readsync(char* filepath){
+void readsyncData(char* filepath){
 
-	sync.gitdirs = NULL;
-	sync.makedirs = NULL;
-	sync.rcdirs = NULL;
+	syncData.gitdirs = NULL;
+	syncData.makedirs = NULL;
+	syncData.rcdirs = NULL;
 
-	sync.ngitdirs = 0;
-	sync.nmakedirs = 0;
-	sync.nrcdirs = 0;
+	syncData.ngitdirs = 0;
+	syncData.nmakedirs = 0;
+	syncData.nrcdirs = 0;
 
 	/* Load synfile into buffer */
 
@@ -93,7 +91,7 @@ void readsync(char* filepath){
 		if (buffer) {
 			fread(buffer, 1, bufferLength, fp);
 		}else{
-			printf("Syncfile does not exist!\n");
+			printf("Syncfile is empty!\n");
 			exit(-1);
 		}
 		fclose(fp);
@@ -123,12 +121,12 @@ void readsync(char* filepath){
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
-						sync.ngitdirs++;
-						sync.gitdirs = realloc(sync.gitdirs, sync.ngitdirs * sizeof(char*));
-						sync.gitdirs[sync.ngitdirs - 1] = malloc(filepathLength);
+						syncData.ngitdirs++;
+						syncData.gitdirs = realloc(syncData.gitdirs, syncData.ngitdirs * sizeof(char*));
+						syncData.gitdirs[syncData.ngitdirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
-							sync.gitdirs[sync.ngitdirs - 1][k] = buffer[startFilepath + k];
-						sync.gitdirs[sync.ngitdirs - 1][filepathLength - 1] = '\0';
+							syncData.gitdirs[syncData.ngitdirs - 1][k] = buffer[startFilepath + k];
+						syncData.gitdirs[syncData.ngitdirs - 1][filepathLength - 1] = '\0';
 					}
 				}
 				break;
@@ -137,13 +135,12 @@ void readsync(char* filepath){
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
-						sync.nmakedirs++;
-						sync.makedirs = realloc(sync.makedirs, sync.nmakedirs * sizeof(char*));
-						sync.makedirs[sync.nmakedirs - 1] = malloc(filepathLength);
+						syncData.nmakedirs++;
+						syncData.makedirs = realloc(syncData.makedirs, syncData.nmakedirs * sizeof(char*));
+						syncData.makedirs[syncData.nmakedirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
-							sync.makedirs[sync.nmakedirs - 1][k] = buffer[startFilepath + k];
-						sync.makedirs[sync.nmakedirs - 1][filepathLength - 1] = '\0';
-
+							syncData.makedirs[syncData.nmakedirs - 1][k] = buffer[startFilepath + k];
+						syncData.makedirs[syncData.nmakedirs - 1][filepathLength - 1] = '\0';
 					}
 				}
 				break;
@@ -152,13 +149,12 @@ void readsync(char* filepath){
 				if(buffer[n] == '\n'){
 					readMode = TAG;
 					if(filepathLength > 1){
-						sync.nrcdirs++;
-						sync.rcdirs = realloc(sync.rcdirs, sync.nrcdirs * sizeof(char*));
-						sync.rcdirs[sync.nrcdirs - 1] = malloc(filepathLength);
+						syncData.nrcdirs++;
+						syncData.rcdirs = realloc(syncData.rcdirs, syncData.nrcdirs * sizeof(char*));
+						syncData.rcdirs[syncData.nrcdirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
-							sync.rcdirs[sync.nrcdirs - 1][k] = buffer[startFilepath + k];
-						sync.rcdirs[sync.nrcdirs - 1][filepathLength - 1] = '\0';
-
+							syncData.rcdirs[syncData.nrcdirs - 1][k] = buffer[startFilepath + k];
+						syncData.rcdirs[syncData.nrcdirs - 1][filepathLength - 1] = '\0';
 					}
 				}
 				break;
@@ -195,7 +191,7 @@ int main(int argc, char** argv){
 	/* Handle args */
 
 	if(argc < 2){
-		printf("Not enough arguments given, usage: dsync < pull/push/create > [ syncfile ]\n");
+		printf("Not enough arguments given, usage: dsyncData < pull/push/create > [ syncDatafile ]\n");
 		return -1;
 	}
 
@@ -205,7 +201,10 @@ int main(int argc, char** argv){
 		mode = PUSH;
 	else if(!strcmp(argv[1], "create"))
 		mode = CREATE;
-	else printf("Invalid argument: '%s'\n", argv[1]);
+	else{
+		printf("Invalid argument: '%s'\n", argv[1]);
+		exit(-1);
+	}
 
 	if(argc > 2)
 		hasFilePath = true;
@@ -219,159 +218,129 @@ int main(int argc, char** argv){
 		/* Read Syncfile */
 
 		if(hasFilePath)
-			readsync(argv[PATH_MAX]);
+			readsyncData(argv[2]);
 		else
-			readsync(".syncfile");
+			readsyncData(".syncDatafile");
 
-		char cdcommand[PATH_MAX];
 		if(mode == PULL){
 
 			/* Git dirs  */
 
-			printf("Pulling %d git repos\n\n", sync.ngitdirs);
-			for(int n = 0; n < sync.ngitdirs; n++){
-				printf("Running %s\n", sync.gitdirs[n]);
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, sync.gitdirs[n]);
-				system(cdcommand);
+			printf("Pulling %d git repos\n\n", syncData.ngitdirs);
+			for(int n = 0; n < syncData.ngitdirs; n++){
+				printf("Running %s\n", syncData.gitdirs[n]);
+				chdir(syncData.gitdirs[n]);
 				system("git pull");
 			}
 
-			strcpy(cdcommand, "cd ");
-			strcat(cdcommand, currentdir);
-			system(cdcommand);
-
 			/* Make dirs */
 
-			printf("Installing %d programs with make\n\n", sync.nmakedirs);
-			for(int n = 0; n < sync.nmakedirs; n++){
-				printf("Running %s\n", sync.makedirs[n]);
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, sync.makedirs[n]);
-				system(cdcommand);
+			printf("Installing %d programs with make\n\n", syncData.nmakedirs);
+			for(int n = 0; n < syncData.nmakedirs; n++){
+				printf("Running %s\n", syncData.makedirs[n]);
+				chdir(syncData.makedirs[n]);
 				system("sudo make install");
 			}
 
-			strcpy(cdcommand, "cd ");
-			strcat(cdcommand, currentdir);
-			system(cdcommand);
-
 			/* rcdirs */
  
-			printf("Running %d pullrcs\n\n", sync.nmakedirs);
-			for(int n = 0; n < sync.nrcdirs; n++){
-				printf("Running %s\n", sync.rcdirs[n]);
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, sync.rcdirs[n]);
-				system(cdcommand);
-				system("sh .syncpullrc");
+			printf("Running %d pullrcs\n\n", syncData.nmakedirs);
+			for(int n = 0; n < syncData.nrcdirs; n++){
+				printf("Running %s\n", syncData.rcdirs[n]);
+				chdir(syncData.rcdirs[n]);
+				system("sh .syncDatapullrc");
 			}
-
-			strcpy(cdcommand, "cd ");
-			strcat(cdcommand, currentdir);
-			system(cdcommand);
 
 		} else if(mode == PUSH){
 
 			/* rcdirs */
 
-			printf("Running %d pushrcs\n\n", sync.nrcdirs);
-			for(int n = 0; n < sync.nrcdirs; n++){
-				printf("Running %s\n", sync.rcdirs[n]);
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, sync.rcdirs[n]);
-				system(cdcommand);
-				system("sh .syncpushrc");
+			printf("Running %d pushrcs\n\n", syncData.nrcdirs);
+			for(int n = 0; n < syncData.nrcdirs; n++){
+				printf("Running %s\n", syncData.rcdirs[n]);
+				chdir(syncData.rcdirs[n]);
+				system("sh .syncDatapushrc");
 			}
-
-			strcpy(cdcommand, "cd ");
-			strcat(cdcommand, currentdir);
-			system(cdcommand);
 
 			/* Git dirs  */
 
-			printf("Pushing %d git dirs\n\n", sync.ngitdirs);
-			for(int n = 0; n < sync.ngitdirs; n++){
-				printf("Pushing %s\n", sync.gitdirs[n]);
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, sync.gitdirs[n]);
-				system(cdcommand);
+			printf("Pushing %d git dirs\n\n", syncData.ngitdirs);
+			for(int n = 0; n < syncData.ngitdirs; n++){
+				printf("Pushing %s\n", syncData.gitdirs[n]);
+				chdir(syncData.gitdirs[n]);
 				system("git add --all");
 				system("git commit");
 				system("git push");
 			}
 		}
 	}else{
-		sync.gitdirs = NULL;
-		sync.makedirs = NULL;
-		sync.rcdirs = NULL;
+		syncData.gitdirs = NULL;
+		syncData.makedirs = NULL;
+		syncData.rcdirs = NULL;
 
-		sync.ngitdirs = 0;
-		sync.nmakedirs = 0;
-		sync.nrcdirs = 0;
+		syncData.ngitdirs = 0;
+		syncData.nmakedirs = 0;
+		syncData.nrcdirs = 0;
 
 		printf("\nEnter all git dirs and then enter 'end'\n\n");
 		for(;;){
-			char input[PATH_MAX];
-			char filePath[PATH_MAX];
+			char input[256];
+			char filePath[256];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
 				realpath(input, filePath);
 				printf("%s\n", filePath);
-				sync.ngitdirs++;
-				sync.gitdirs = realloc(sync.gitdirs, sync.ngitdirs * sizeof(char*));
-				sync.gitdirs[sync.ngitdirs - 1] = malloc(strlen(filePath));
-				strcpy(sync.gitdirs[sync.ngitdirs - 1], filePath);
+				syncData.ngitdirs++;
+				syncData.gitdirs = realloc(syncData.gitdirs, syncData.ngitdirs * sizeof(char*));
+				syncData.gitdirs[syncData.ngitdirs - 1] = malloc(strlen(filePath));
+				strcpy(syncData.gitdirs[syncData.ngitdirs - 1], filePath);
 			}
 		}
 		printf("\nEnter all make dirs and then enter 'end'\n\n");
 		for(;;){
-			char input[PATH_MAX];
-			char filePath[PATH_MAX];
+			char input[256];
+			char filePath[256];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
 				realpath(input, filePath);
 				printf("%s\n", filePath);
-				sync.nmakedirs++;
-				sync.makedirs = realloc(sync.makedirs, sync.nmakedirs * sizeof(char*));
-				sync.makedirs[sync.nmakedirs - 1] = malloc(strlen(filePath));
-				strcpy(sync.makedirs[sync.nmakedirs - 1], filePath);
+				syncData.nmakedirs++;
+				syncData.makedirs = realloc(syncData.makedirs, syncData.nmakedirs * sizeof(char*));
+				syncData.makedirs[syncData.nmakedirs - 1] = malloc(strlen(filePath));
+				strcpy(syncData.makedirs[syncData.nmakedirs - 1], filePath);
 			}
 		}
 		printf("\nEnter all rc dirs and then enter 'end'\n\n");
 		for(;;){
-			char cdcommand[PATH_MAX];
-			char touchcommand[PATH_MAX];
-			char input[PATH_MAX];
-			char filePath[PATH_MAX];
+			char touchcommand[256];
+			char input[256];
+			char filePath[256];
 			scanf("%s", &input);
 			if(!strcmp(input, "end"))
 				break;
 			else{
 				realpath(input, filePath);
 				printf("%s\n", filePath);
-				sync.nrcdirs++;
-				sync.rcdirs = realloc(sync.rcdirs, sync.nrcdirs * sizeof(char*));
-				sync.rcdirs[sync.nrcdirs - 1] = malloc(strlen(filePath));
-				strcpy(sync.rcdirs[sync.nrcdirs - 1], filePath);
+				syncData.nrcdirs++;
+				syncData.rcdirs = realloc(syncData.rcdirs, syncData.nrcdirs * sizeof(char*));
+				syncData.rcdirs[syncData.nrcdirs - 1] = malloc(strlen(filePath));
+				strcpy(syncData.rcdirs[syncData.nrcdirs - 1], filePath);
 
-				strcpy(cdcommand, "cd ");
-				strcat(cdcommand, currentdir);
-				system(cdcommand);
+				chdir(currentdir);
 
-				system("touch .syncpullrc");
-				system("touch .syncpushrc");
+				system("touch .syncDatapullrc");
+				system("touch .syncDatapushrc");
 			}
 		}
-		printf("writing .syncfile\n");
+		printf("writing .syncDatafile\n");
 		if(hasFilePath)
-			writesync(argv[2]);
+			writesyncData(argv[2]);
 		else
-			writesync(".syncfile");
-		printf("wrote .syncfile\n");
+			writesyncData(".syncDatafile");
+		printf("wrote .syncDatafile\n");
 	}
 }
