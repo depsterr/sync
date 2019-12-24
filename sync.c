@@ -48,6 +48,8 @@ void getOutput(char** returnstr, char* command){
 
 void writesyncData(char* filepath){
 
+	chdir(currentdir);
+
 	FILE* fp = fopen (filepath, "w");
 
 	if(fp){
@@ -191,7 +193,7 @@ int main(int argc, char** argv){
 	/* Handle args */
 
 	if(argc < 2){
-		printf("Not enough arguments given, usage: dsyncData < pull/push/create > [ syncDatafile ]\n");
+		printf("Not enough arguments given, usage: dsync < pull/push/create > [ syncfile ]\n");
 		return -1;
 	}
 
@@ -220,7 +222,7 @@ int main(int argc, char** argv){
 		if(hasFilePath)
 			readsyncData(argv[2]);
 		else
-			readsyncData(".syncDatafile");
+			readsyncData(".syncfile");
 
 		if(mode == PULL){
 
@@ -248,7 +250,7 @@ int main(int argc, char** argv){
 			for(int n = 0; n < syncData.nrcdirs; n++){
 				printf("Running %s\n", syncData.rcdirs[n]);
 				chdir(syncData.rcdirs[n]);
-				system("sh .syncDatapullrc");
+				system("sh .syncpullrc");
 			}
 
 		} else if(mode == PUSH){
@@ -259,7 +261,7 @@ int main(int argc, char** argv){
 			for(int n = 0; n < syncData.nrcdirs; n++){
 				printf("Running %s\n", syncData.rcdirs[n]);
 				chdir(syncData.rcdirs[n]);
-				system("sh .syncDatapushrc");
+				system("sh .syncpushrc");
 			}
 
 			/* Git dirs  */
@@ -332,15 +334,15 @@ int main(int argc, char** argv){
 
 				chdir(currentdir);
 
-				system("touch .syncDatapullrc");
-				system("touch .syncDatapushrc");
+				system("echo \\#\\!/bin/sh >> .syncpullrc");
+				system("echo \\#\\!/bin/sh >> .syncpushrc");
 			}
 		}
-		printf("writing .syncDatafile\n");
+		printf("writing .syncfile\n");
 		if(hasFilePath)
 			writesyncData(argv[2]);
 		else
-			writesyncData(".syncDatafile");
-		printf("wrote .syncDatafile\n");
+			writesyncData(".syncfile");
+		printf("wrote .syncfile\n");
 	}
 }
