@@ -128,7 +128,7 @@ void readsync(char* filepath){
 						sync.gitdirs[sync.ngitdirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
 							sync.gitdirs[sync.ngitdirs - 1][k] = buffer[startFilepath + k];
-						sync.gitdirs[sync.ngitdirs - 1][filepathLength - 1] = '0';
+						sync.gitdirs[sync.ngitdirs - 1][filepathLength - 1] = '\0';
 					}
 				}
 				break;
@@ -142,7 +142,7 @@ void readsync(char* filepath){
 						sync.makedirs[sync.nmakedirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
 							sync.makedirs[sync.nmakedirs - 1][k] = buffer[startFilepath + k];
-						sync.makedirs[sync.nmakedirs - 1][filepathLength - 1] = '0';
+						sync.makedirs[sync.nmakedirs - 1][filepathLength - 1] = '\0';
 
 					}
 				}
@@ -157,7 +157,7 @@ void readsync(char* filepath){
 						sync.rcdirs[sync.nrcdirs - 1] = malloc(filepathLength);
 						for(int k = 0; k < filepathLength; k++)
 							sync.rcdirs[sync.nrcdirs - 1][k] = buffer[startFilepath + k];
-						sync.rcdirs[sync.nrcdirs - 1][filepathLength - 1] = '0';
+						sync.rcdirs[sync.nrcdirs - 1][filepathLength - 1] = '\0';
 
 					}
 				}
