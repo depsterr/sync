@@ -129,7 +129,7 @@ void readsync(char* filepath){
 						for(int k = 0; k < filepathLength; k++)
 							sync.gitdirs[sync.ngitdirs - 1][k] = buffer[startFilepath + k];
 						sync.gitdirs[sync.ngitdirs - 1][filepathLength - 1] = '0';
-
+						printf("Read %s\n", sync.gitdirs[sync.ngitdirs - 1]);
 					}
 				}
 				break;
